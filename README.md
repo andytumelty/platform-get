@@ -13,11 +13,13 @@ Ingest pollers -> Data Store <-> Predictive analytics
 
 ## Setup
 - python modules
--- suds
--- yaml
--- ...
+  - suds
+  - yaml
+  - json
+  - pymongo
+  - ...
 - Add your OpenLDBWS token to credentials.yml (tokens[darwin])
--- Register for your token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
+  - Register for your token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
 
 ## Ingestion
 poller that populates a database
