@@ -1,0 +1,21 @@
+Ingestion
+
+poller that populates a database
+- get list of services (initially from a small set of CRS, inner london train stations)
+- query service within a given range up to the point of departure (when it's departed, the service probably won't be updating with anything we care about)
+- OR: use GetDepBoardWithDetails to get service details. Query this a lot, with the time offset 5 minutes in the past?
+
+Ideally, should be able to find a service in the future, even if there isn't any data about it. Maybe have something that populates services on a less regular basis?
+
+
+
+Predictor
+
+query mechanism that uses data and finds the likely platform
+
+How should the platform be predicted?
+Data inputs:
+- platforms used for this service
+- platforms used by this service at this time
+- platforms used by this service on this day of the week
+- platforms that are currently allocated
