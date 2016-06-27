@@ -4,7 +4,29 @@
 # https://svn.fedorahosted.org/svn/suds/trunk/tests/rhq.py
 
 import yaml
+import json
 from suds.client import Client
+from suds.sudsobject import asdict
+
+def recursive_asdict(d):
+  """Convert Suds object into serializable format."""
+  out = {}
+  for k, v in asdict(d).iteritems():
+    if hasattr(v, '__keylist__'):
+      out[k] = recursive_asdict(v)
+    elif isinstance(v, list):
+      out[k] = []
+      for item in v:
+        if hasattr(item, '__keylist__'):
+          out[k].append(recursive_asdict(item))
+        else:
+          out[k].append(item)
+    else:
+      out[k] = v
+  return out
+
+def suds_to_json(data):
+  return json.dumps(recursive_asdict(data))
 
 # TODO bomb out if can't read necessary credentials
 # TODO optionally use ENV variables for tokens
@@ -42,7 +64,8 @@ result = client.service.GetDepBoardWithDetails(
   timeOffset,
   timeWindow, )
 
-print result
+# TODO guard against timeouts, request quota exceeded
+print suds_to_json(result.trainServices)
 
 # TODO serialize result to JSON
 # TODO store result in mongodb
