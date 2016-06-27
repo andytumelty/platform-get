@@ -1,12 +1,17 @@
-# OVERVIEW
+# platform-get
+Predicts train platforms
+
+## Overview
+````
 Ingest pollers -> Data Store <-> Predictive analytics
                       |
                       V
                     Query
                    REST API
             Dude, where's my train?
+````
 
-# INGESTION
+## Ingestion
 poller that populates a database
 - one poller per station
 - get list of services (initially from a small set of CRS, inner london train stations)
@@ -21,46 +26,44 @@ Suggest do the busiest railway stations
 https://en.wikipedia.org/wiki/List_of_busiest_railway_stations_in_Great_Britain
 
 Top 30:
-WAT London Waterloo
-VIC London Victoria
-LST London Liverpool Street
-LBG London Bridge
-CHX London Charing Cross
-EUS London Euston
-PAD London Paddington
-BHM Birmingham New Street
-KGX London King's Cross
-SRA Stratford
-GLC Glasgow Central
-LDS Leeds
-STP London St Pancras
-CLJ Clapham Junction
-MAN Manchester Piccadilly
-ECR East Croydon
-CST London Cannon Street
-VXH Vauxhall
-EDB Edinburgh Waverley
-HHY Highbury and Islington
-WIM Wimbledon
-FST London Fenchurch Street
-GTW Gatwick Airport
-BTN Brighton
-GLQ Glasgow Queen Street
-RDG Reading
-MYB London Marylebone
-LVC Liverpool Central
-BFR London Blackfriars
-LIV Liverpool Lime Street
+- WAT London Waterloo
+- VIC London Victoria
+- LST London Liverpool Street
+- LBG London Bridge
+- CHX London Charing Cross
+- EUS London Euston
+- PAD London Paddington
+- BHM Birmingham New Street
+- KGX London King's Cross
+- SRA Stratford
+- GLC Glasgow Central
+- LDS Leeds
+- STP London St Pancras
+- CLJ Clapham Junction
+- MAN Manchester Piccadilly
+- ECR East Croydon
+- CST London Cannon Street
+- VXH Vauxhall
+- EDB Edinburgh Waverley
+- HHY Highbury and Islington
+- WIM Wimbledon
+- FST London Fenchurch Street
+- GTW Gatwick Airport
+- BTN Brighton
+- GLQ Glasgow Queen Street
+- RDG Reading
+- MYB London Marylebone
+- LVC Liverpool Central
+- BFR London Blackfriars
+- LIV Liverpool Lime Street
 
 Usage is capped at 5000/hr
 If all 30, can update them every 30s at be at 3,600 req/hr
 
-
-# DATA STORE
+## Data Store
 mongoDB? HBASE?
 
-
-# PREDICTOR
+## Predictor
 query mechanism that uses data and finds the likely platform
 
 How should the platform be predicted?
@@ -73,7 +76,6 @@ Data inputs:
 Maybe mapreduce jobs running, updating the platforms on a regular basis
 Probably not driven by user queries
 
-
-# REST API
+## REST API
 - get departure boards/services filtered by station, time
 - get information about this service
