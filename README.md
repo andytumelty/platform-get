@@ -11,6 +11,14 @@ Ingest pollers -> Data Store <-> Predictive analytics
             Dude, where's my train?
 ````
 
+## Setup
+- python modules
+-- suds
+-- yaml
+-- ...
+- Add your OpenLDBWS token to credentials.yml (tokens[darwin])
+-- Register for your token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
+
 ## Ingestion
 poller that populates a database
 - one poller per station
