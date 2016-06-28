@@ -6,6 +6,8 @@
 import logging
 import json
 import yaml
+import time
+import datetime
 from suds.client import Client
 from suds.sudsobject import asdict
 from pymongo import MongoClient
@@ -62,38 +64,57 @@ timeWindow = 120
 # TODO split into poller objects, create one per CRS
 # TODO define CRS in a config file somewhere
 
-logging.info('Getting data')
-#result = client.service.GetDepartureBoard(
-result = client.service.GetDepBoardWithDetails(
-    numRows,
-    crs,
-    filterCrs,
-    filterType,
-    timeOffset,
-    timeWindow, )
+while True:
+    logging.info('Getting data')
+    #result = client.service.GetDepartureBoard(
+    result = client.service.GetDepBoardWithDetails(
+        numRows,
+        crs,
+        filterCrs,
+        filterType,
+        timeOffset,
+        timeWindow, )
 
-# TODO guard against timeouts, request quota exceeded
-services = recursive_asdict(result.trainServices)
+    # TODO guard against timeouts, request quota exceeded
+    services = recursive_asdict(result.trainServices)
 
-dbName = 'platform_get'
-dbHost = 'localhost'
-dbPort = 27017
+    dbName = 'platform_get'
+    dbHost = 'localhost'
+    dbPort = 27017
 
-# TODO change to use db config from file
-dbClient = MongoClient(dbHost, dbPort)
-db = dbClient[dbName]
-servicesCollection = db.services
+    # TODO change to use db config from file
+    dbClient = MongoClient(dbHost, dbPort)
+    db = dbClient[dbName]
+    servicesCollection = db.services
 
-# insert or update
-for service in services['service']:
-    # print service
-    print service.get('std')
-    print service.get('origin')
-    print service.get('serviceType')
-    print service.get('destination')
-    print service.get('platform')
-    print service.get('rsid')
-    print service.get('serviceID')
-    print service.get('etd')
-    print service.get('operator')
-    print service.get('operatorCode')
+    # insert or update
+    for service in services['service']:
+
+        logging.info('Storing service ' +
+                service.get('serviceID') + ' ' +
+                service.get('std') + ' ' + ' ' +
+                service.get('origin')['location'][0]['crs'] + ' -> ' +
+                service.get('destination')['location'][0]['crs']
+                )
+
+        # TODO is serviceID guaranteed to be unique forever?
+        servicesCollection.find_one_and_update(
+            {'serviceID': service.get('serviceID')},
+            {'$set':{
+                'std': service.get('std'),
+                'origin': service.get('origin'),
+                'serviceType': service.get('serviceType'),
+                'destination': service.get('destination'),
+                'platform': service.get('platform'),
+                'rsid': service.get('rsid'),
+                'serviceID': service.get('serviceID'),
+                'etd': service.get('etd'),
+                'operator': service.get('operator'),
+                'operatorCode': service.get('operatorCode'),
+                'lastUpdated': datetime.datetime.utcnow().isoformat()
+                }
+            },
+            upsert=True
+        )
+
+    time.sleep(30)
