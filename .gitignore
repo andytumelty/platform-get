@@ -36,3 +36,4 @@ build/
 .rvmrc
 
 credentials.yml
+*.log

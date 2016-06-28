@@ -32,7 +32,7 @@ If ingest is stopped, should be able to catch up gradually
 
 Ideally, should be able to find a service in the future, even if there isn't any data about it. Maybe have something that populates services on a less regular basis?
 
-Should probably have sections to ingest (therefore different pollers, ideally with different priorities, the more irregular ones can capitalise on quiet periods and load future journeys without exceeding the request limit)
+Should probably have sections to ingest (therefore different pollers, ideally with different priorities, the more irregular ones can capitalise on quiet periods (when stations are closed at night maybe?) and load future journeys without exceeding the request limit)
 - (a) have departed: never update
 - (b) have had their platform confirmed: check irregularly until (a)
 - (c) will have their platform announced soon: check as often as possible until (b)
