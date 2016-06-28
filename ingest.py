@@ -12,7 +12,14 @@ from suds.client import Client
 from suds.sudsobject import asdict
 from pymongo import MongoClient
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+        filename='ingest.log',
+        format='%(asctime)s [%(levelname)s] %(message)s',
+        datefmt='%Y-%m-%dT%H:%M:%S%Z',
+        level=logging.INFO)
+logging.Formatter.converter = time.gmtime
+
+logging.info('Starting platform-get ingest.py')
 
 def recursive_asdict(data):
     """Convert Suds object into serializable format."""
