@@ -3,30 +3,37 @@
 # see for examples:
 # https://svn.fedorahosted.org/svn/suds/trunk/tests/rhq.py
 
-import yaml
+import logging
 import json
+import yaml
 from suds.client import Client
 from suds.sudsobject import asdict
+from pymongo import MongoClient
 
-def recursive_asdict(d):
-  """Convert Suds object into serializable format."""
-  out = {}
-  for k, v in asdict(d).iteritems():
-    if hasattr(v, '__keylist__'):
-      out[k] = recursive_asdict(v)
-    elif isinstance(v, list):
-      out[k] = []
-      for item in v:
-        if hasattr(item, '__keylist__'):
-          out[k].append(recursive_asdict(item))
+logging.basicConfig(level=logging.INFO)
+
+def recursive_asdict(data):
+    """Convert Suds object into serializable format."""
+    out = {}
+    for key, val in asdict(data).iteritems():
+        if hasattr(val, '__keylist__'):
+            out[key] = recursive_asdict(val)
+        elif isinstance(val, list):
+            out[key] = []
+            for item in val:
+                if hasattr(item, '__keylist__'):
+                    out[key].append(recursive_asdict(item))
+                else:
+                    out[key].append(item)
         else:
-          out[k].append(item)
-    else:
-      out[k] = v
-  return out
+            out[key] = val
+    return out
 
 def suds_to_json(data):
-  return json.dumps(recursive_asdict(data))
+    """Convert Suds object into JSON format."""
+    return json.dumps(recursive_asdict(data))
+
+logging.info('Loading credentials')
 
 # TODO bomb out if can't read necessary credentials
 # TODO optionally use ENV variables for tokens
@@ -44,7 +51,7 @@ token.TokenValue = credentials['tokens']['darwin']
 client.set_options(soapheaders=token) 
 
 # TODO check token credentials
-     
+         
 numRows = 10
 crs = 'EUS'
 filterCrs = None
@@ -55,17 +62,38 @@ timeWindow = 120
 # TODO split into poller objects, create one per CRS
 # TODO define CRS in a config file somewhere
 
+logging.info('Getting data')
 #result = client.service.GetDepartureBoard(
 result = client.service.GetDepBoardWithDetails(
-  numRows,
-  crs,
-  filterCrs,
-  filterType,
-  timeOffset,
-  timeWindow, )
+    numRows,
+    crs,
+    filterCrs,
+    filterType,
+    timeOffset,
+    timeWindow, )
 
 # TODO guard against timeouts, request quota exceeded
-print suds_to_json(result.trainServices)
+services = recursive_asdict(result.trainServices)
 
-# TODO serialize result to JSON
-# TODO store result in mongodb
+dbName = 'platform_get'
+dbHost = 'localhost'
+dbPort = 27017
+
+# TODO change to use db config from file
+dbClient = MongoClient(dbHost, dbPort)
+db = dbClient[dbName]
+servicesCollection = db.services
+
+# insert or update
+for service in services['service']:
+    # print service
+    print service.get('std')
+    print service.get('origin')
+    print service.get('serviceType')
+    print service.get('destination')
+    print service.get('platform')
+    print service.get('rsid')
+    print service.get('serviceID')
+    print service.get('etd')
+    print service.get('operator')
+    print service.get('operatorCode')
