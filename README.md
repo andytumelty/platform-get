@@ -32,6 +32,12 @@ If ingest is stopped, should be able to catch up gradually
 
 Ideally, should be able to find a service in the future, even if there isn't any data about it. Maybe have something that populates services on a less regular basis?
 
+Should probably have sections to ingest (therefore different pollers, ideally with different priorities, the more irregular ones can capitalise on quiet periods and load future journeys without exceeding the request limit)
+- (a) have departed: never update
+- (b) have had their platform confirmed: check irregularly until (a)
+- (c) will have their platform announced soon: check as often as possible until (b)
+- (d) are in the timetable: update slowly until they qualify for (c)
+
 Suggest do the busiest railway stations
 https://en.wikipedia.org/wiki/List_of_busiest_railway_stations_in_Great_Britain
 
