@@ -129,6 +129,8 @@ client.set_options(soapheaders = token)
 try:
     for crs in crsList:
         thread.start_new_thread(poller, (crs,))
+        # Keeps the logging nice, and evens out requests
+        time.sleep(1)
 except:
     logging.error('Unable to start thread')
 
