@@ -18,7 +18,8 @@ Ingest pollers -> Data Store <-> Predictive analytics
   - json
   - pymongo
   - ...
-- Add your OpenLDBWS token to credentials.yml (tokens[darwin])
+- MongoDB >= 3.2 needs to be running, configured in ingest.cfg
+- Add your OpenLDBWS token to ingest.cfg (tokens[darwin])
   - Register for your token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
 
 ## Ingestion
