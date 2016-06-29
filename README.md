@@ -18,7 +18,7 @@ Ingest pollers -> Data Store <-> Predictive analytics
   - json
   - pymongo
   - ...
-- MongoDB >= 3.2 needs to be running, configured in ingest.cfg
+- MongoDB >= 3.2 (ingest.py makes use of the [findOneAndUpdate function](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndUpdate/#db.collection.findOneAndUpdate), introduced in 3.2) needs to be running, configured in ingest.cfg
 - Add your OpenLDBWS token to ingest.cfg (tokens[darwin])
   - Register for your token [here](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration/)
 
