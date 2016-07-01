@@ -115,9 +115,9 @@ def poller(crs):
                         upsert=True
                     )
             except:
-                logging.error('[' + crs + '] Error parsing and saving train services')
+                logging.error('[' + crs + '] Error parsing and saving train services', exc_info=True)
         except:
-            logging.error('[' + crs + '] Error getting train services')
+            logging.error('[' + crs + '] Error getting train services', exc_info=True)
 
         time.sleep(30)
 
@@ -138,7 +138,7 @@ try:
         # Keeps the logging nice, and evens out requests
         time.sleep(1)
 except:
-    logging.error('[' + crs + '] Unable to start thread')
+    logging.error('[' + crs + '] Unable to start thread', exc_info=True)
 
 while 1:
     pass
