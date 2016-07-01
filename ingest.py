@@ -68,50 +68,56 @@ def suds_to_json(data):
 def poller(crs):
     """ingestion polling for a station"""
 
-    logging.info('Starting poller for ' + crs)
+    logging.info('[' + crs + '] Starting poller')
     while 1:
-        logging.info('Getting data for ' + crs)
+        logging.info('[' + crs + '] Getting data')
 
         # TODO guard against timeouts, request quota exceeded
-        result = client.service.GetDepBoardWithDetails(
-            numRows,
-            crs,
-            filterCrs,
-            filterType,
-            timeOffset,
-            timeWindow, )
+        try:
+            result = client.service.GetDepBoardWithDetails(
+                numRows,
+                crs,
+                filterCrs,
+                filterType,
+                timeOffset,
+                timeWindow, )
 
-        services = recursive_asdict(result.trainServices)
+            try:
+                services = recursive_asdict(result.trainServices)
 
-        # insert or update
-        for service in services['service']:
+                # insert or update
+                for service in services['service']:
 
-            logging.info('Storing service ' +
-                    service.get('serviceID') + ' ' +
-                    service.get('std') + ' ' + ' ' +
-                    service.get('origin')['location'][0]['crs'] + ' -> ' +
-                    service.get('destination')['location'][0]['crs']
+                    logging.info('[' + crs + '] Storing service ' +
+                            service.get('serviceID') + ' ' +
+                            service.get('std') + ' ' + ' ' +
+                            service.get('origin')['location'][0]['crs'] + ' -> ' +
+                            service.get('destination')['location'][0]['crs']
+                            )
+
+                    # TODO is serviceID guaranteed to be unique forever?
+                    servicesCollection.find_one_and_update(
+                        { 'serviceID': service.get('serviceID') },
+                        { '$set': {
+                            'std':          service.get('std'),
+                            'origin':       service.get('origin'),
+                            'serviceType':  service.get('serviceType'),
+                            'destination':  service.get('destination'),
+                            'platform':     service.get('platform'),
+                            'rsid':         service.get('rsid'),
+                            'serviceID':    service.get('serviceID'),
+                            'etd':          service.get('etd'),
+                            'operator':     service.get('operator'),
+                            'operatorCode': service.get('operatorCode'),
+                            'lastUpdated':  datetime.datetime.utcnow().isoformat()
+                            }
+                        },
+                        upsert=True
                     )
-
-            # TODO is serviceID guaranteed to be unique forever?
-            servicesCollection.find_one_and_update(
-                { 'serviceID': service.get('serviceID') },
-                { '$set': {
-                    'std':          service.get('std'),
-                    'origin':       service.get('origin'),
-                    'serviceType':  service.get('serviceType'),
-                    'destination':  service.get('destination'),
-                    'platform':     service.get('platform'),
-                    'rsid':         service.get('rsid'),
-                    'serviceID':    service.get('serviceID'),
-                    'etd':          service.get('etd'),
-                    'operator':     service.get('operator'),
-                    'operatorCode': service.get('operatorCode'),
-                    'lastUpdated':  datetime.datetime.utcnow().isoformat()
-                    }
-                },
-                upsert=True
-            )
+            except:
+                logging.error('[' + crs + '] Error parsing and saving train services')
+        except:
+            logging.error('[' + crs + '] Error getting train services')
 
         time.sleep(30)
 
@@ -132,7 +138,7 @@ try:
         # Keeps the logging nice, and evens out requests
         time.sleep(1)
 except:
-    logging.error('Unable to start thread')
+    logging.error('[' + crs + '] Unable to start thread')
 
 while 1:
     pass
